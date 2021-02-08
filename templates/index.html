@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+Zapy
+{% endblock title %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Cześć, {% if name %} {{name}}{% else %}nieznajomy{% endif %}</h1>
+</div>
+{{ wtf.quick_form(form) }}
+{% endblock page_content %}

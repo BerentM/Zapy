@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}
+Zapy
+{% endblock title %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Witaj, {{ name }}!</h1>
+    <p>Twoje IP: {{ ip }}</p>
+    <h2>Świeże newsy:</h2>
+    {% for post in posts%}
+        <h3>{{post.title}}</h6>
+        <p><b>Autor: {{post.author}}</b></p>
+        <p><i>Dodano: {{post.date}}</i></p>
+        {% endfor %}
+</div>
+{% endblock page_content %}
