@@ -1,8 +1,12 @@
+import json
+
 import flask
 from flask_bootstrap import Bootstrap
+from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+
 
 class NameForm(FlaskForm):
     name = StringField('Jak masz na imie?', validators=[DataRequired()])
@@ -11,6 +15,13 @@ class NameForm(FlaskForm):
 app = flask.Flask(__name__)
 bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = 'super tajne haslo'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/zapy.db'
+
+db = SQLAlchemy(app)
+
+class Person(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -46,9 +57,34 @@ def user(name):
     ]
     return flask.render_template('user.html', **kwargs, posts=posts)
 
+products = [
+    {
+        "id": 1,
+        "product": "popkorn",
+        "count": 2,
+        "source": "Auchan",
+        "added": "2021-02-21",
+    },
+    {
+        "id": 2,
+        "product": "sztućce",
+        "count": 1,
+        "source": "Auchan",
+        "added": "2021-02-21",
+    },
+    {
+        "id": 3,
+        "product": "jajka",
+        "count": 40,
+        "source": "Lubawa",
+        "added": "2021-02-21",
+    },
+]
+
+
 @app.route('/tabelka')
 def tabelka():
-    return flask.render_template('tabelka.html')
+    return flask.render_template('tabelka.html', products=products)
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -61,7 +97,7 @@ def internal_server_error(e):
 @app.route('/postmethod', methods = ['POST'])
 def get_post_javascript_data():
     jsdata = flask.request.get_data(cache=False)
-    print(str(jsdata))
+    print(json.loads(jsdata))
     return jsdata
 
 if __name__ == '__main__':

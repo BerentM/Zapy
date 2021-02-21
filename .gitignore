@@ -2,3 +2,8 @@ venv
 .vscode
 __pycache__
 js/*
+autocomp_app.py
+todo.md
+data/results.json
+data/zapy.db
+templates/autocomplete.html
