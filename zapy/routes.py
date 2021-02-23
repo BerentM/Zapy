@@ -2,7 +2,7 @@ import json
 
 import flask
 
-from zapy import app
+from zapy import app, db
 from zapy.forms import NameForm
 from zapy.models import Products, Sources
 
@@ -41,34 +41,18 @@ def user(name):
     ]
     return flask.render_template('user.html', **kwargs, posts=posts)
 
-products = [
-    {
-        "id": 1,
-        "product": "popkorn",
-        "count": 2,
-        "source": "Auchan",
-        "added": "2021-02-21",
-    },
-    {
-        "id": 2,
-        "product": "sztućce",
-        "count": 1,
-        "source": "Auchan",
-        "added": "2021-02-21",
-    },
-    {
-        "id": 3,
-        "product": "jajka",
-        "count": 40,
-        "source": "Lubawa",
-        "added": "2021-02-21",
-    },
-]
-
+results = db.session.query(Products, Sources).join(Sources).all()
+out_list = [{
+    "id": result.Products.id,
+    "product": result.Products.product,
+    "count": result.Products.count,
+    "source": result.Sources.source_name,
+    "added": result.Products.timestamp.strftime('%Y-%m-%d')
+} for result in results]
 
 @app.route('/tabelka')
 def tabelka():
-    return flask.render_template('tabelka.html', products=products)
+    return flask.render_template('tabelka.html', products=out_list)
 
 @app.errorhandler(404)
 def page_not_found(e):
