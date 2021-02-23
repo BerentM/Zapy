@@ -1,9 +1,9 @@
 venv
 .vscode
 __pycache__
-js/*
+js
 autocomp_app.py
 todo.md
-data/results.json
-data/zapy.db
-templates/autocomplete.html
+zapy/templates/autocomplete.html
+zapy/data/results.json
+zapy/data/zapy.db
