@@ -4,6 +4,7 @@ import flask
 
 from zapy import app, db
 from zapy.forms import NameForm
+from zapy.functions import modify_products
 from zapy.models import Products, Sources
 
 
@@ -41,18 +42,22 @@ def user(name):
     ]
     return flask.render_template('user.html', **kwargs, posts=posts)
 
-results = db.session.query(Products, Sources).join(Sources).all()
-out_list = [{
-    "id": result.Products.id,
-    "product": result.Products.product,
-    "count": result.Products.count,
-    "source": result.Sources.source_name,
-    "added": result.Products.timestamp.strftime('%Y-%m-%d')
-} for result in results]
 
-@app.route('/tabelka')
+@app.route('/tabelka', methods = ['GET', 'POST'])
 def tabelka():
-    return flask.render_template('tabelka.html', products=out_list)
+    if flask.request.method == 'POST':
+        jsdata = json.loads(flask.request.get_data(cache=False))[0]
+        modify_products(jsdata)
+    results = db.session.query(Products, Sources).join(Sources).all()
+    table_content = [{
+        "id": result.Products.id,
+        "product": result.Products.product,
+        "count": result.Products.count,
+        "source": result.Sources.source_name,
+        "added": result.Products.timestamp.strftime('%Y-%m-%d')
+    } for result in results]
+
+    return flask.render_template('tabelka.html', table_content=table_content)
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -61,9 +66,3 @@ def page_not_found(e):
 @app.errorhandler(500)
 def internal_server_error(e):
     return flask.render_template('500.html'), 500
-
-@app.route('/postmethod', methods = ['POST'])
-def get_post_javascript_data():
-    jsdata = flask.request.get_data(cache=False)
-    print(json.loads(jsdata))
-    return jsdata
