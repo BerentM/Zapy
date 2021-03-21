@@ -7,3 +7,4 @@ todo.md
 zapy/templates/autocomplete.html
 zapy/data/results.json
 zapy/data/zapy.db
+zapy/data/config.ini
