@@ -57,6 +57,6 @@ def get_table_content():
     return table_content
 
 def get_product_count(product_input):
-    result = db.session.query(Products).filter(Products.product == product_input).first()
+    result = db.session.query(Products).filter(db.func.lower(Products.product) == db.func.lower(product_input)).first()
     
     return result.count if result else -999
