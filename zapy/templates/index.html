@@ -7,7 +7,15 @@ Zapy
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Cześć, {% if name %} {{name}}{% else %}nieznajomy{% endif %}</h1>
+    <h1>Cześć! </h1>
 </div>
 {{ wtf.quick_form(form) }}
+{% if product_info %} 
+    <div class="alert alert-dismissible alert-secondary">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    Stan produktu <strong>{{  product_info['product'] }}</strong> <br>
+    W bazie: <strong>{{ product_info['in_db'] }} </strong> <br><br>
+    Ilość: <strong>{{ product_info['count'] }}</strong> 
+    </div>
+{% endif %}
 {% endblock page_content %}
