@@ -19,7 +19,7 @@ def find_source_id(js):
 
 def modify_products(js):
     if js['OperationType'] == 'Edit':
-        if existing := db.session.query(Products).filter(Products.product == js['Product']).first():
+        if existing := db.session.query(Products).filter(Products.id == js['Id']).first():
             existing.product = js['Product']
             existing.count = js['Count']
             existing.source_id = find_source_id(js)
