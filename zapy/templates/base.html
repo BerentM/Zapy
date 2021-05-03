@@ -22,15 +22,9 @@
     <div class="collapse navbar-collapse" id="navbarColor01">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="/">Home
+                <a class="nav-link" href="{{ url_for('index') }}">Zapy
                     <span class="sr-only">(current)</span>
                 </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/user/Kinga">Kinga</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/user/Mateusz">Mateusz</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">About</a>
@@ -39,29 +33,37 @@
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                     aria-expanded="false">Tabele</a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="/tabelka">Tabelka</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
+                    <a class="dropdown-item" href="/tab/zapasy">Zapasy</a>
+                    <a class="dropdown-item" href="/tab/zakupy">Zakupy</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Separated link</a>
+                    <a class="dropdown-item" href="/ustawienia">Ustawienia</a>
                 </div>
             </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Log In!</button>
-        </form>
+        <ul class="navbar-nav my-2 my-lg-0">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('login') }}">Zaloguj się</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('register') }}">Rejestracja</a>
+            </li>
+        </ul>
     </div>
 </nav>
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
 <div class="container">
-    {% for message in get_flashed_messages() %}
-    <div class="alert">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
-    </div>
-    {% endfor %}
     {% block page_content %}{% endblock %}
 </div>
 {% endblock %}
