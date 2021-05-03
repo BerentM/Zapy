@@ -3,13 +3,15 @@ import json
 import flask
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 
 app = flask.Flask(__name__)
 bootstrap = Bootstrap(app)
 
-app.config['SECRET_KEY'] = 'super tajne haslo'
+app.config['SECRET_KEY'] = '4d28e498bdab65c69062da90755f0e44e7cd10d5973f1a82361397e1c377b82f'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/zapy.db'
 
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 
 from zapy import routes
