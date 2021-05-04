@@ -6,14 +6,15 @@ import flask
 from zapy import app, db, bcrypt
 from zapy.forms import ProductForm, RegistrationForm, LoginForm
 from zapy.functions import modify_products, get_table_content, get_product_count
-from zapy.models import Storage, Shop, Sources
+from zapy.models import Storage, Shop, Sources, User
+from flask_login import login_user, current_user, logout_user, login_required
 
 
 @app.route('/home')
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = ProductForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit() and current_user.is_authenticated:
         cnt = get_product_count(form.product.data)
         product_info = {
             "product": form.product.data,
@@ -23,6 +24,8 @@ def index():
         return flask.render_template('index.html', form=form, product_info=product_info)
     else:
         product_info = {}
+        if not current_user.is_authenticated and form.validate_on_submit():
+            flask.flash('Przed sprawdzeniem zapasów, musisz się zalogować.', 'info')
         return flask.render_template('index.html', form=form, product_info=product_info)
 
 @app.route('/tab/<string:page_title>', methods = ['GET', 'POST'])
@@ -38,22 +41,45 @@ def tabelka(page_title):
 
 @app.route("/register", methods = ['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return flask.redirect(flask.url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        hashed_password  = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
         flask.flash(f'Utworzono konto {form.username.data}!', 'success')
-        return flask.redirect(flask.url_for('index'))
+        return flask.redirect(flask.url_for('login'))
     return flask.render_template('register.html', page_title='Rejestracja', form=form)
 
 @app.route("/login", methods = ['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return flask.redirect(flask.url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        if form.email.data == 'admin@wp.pl' and form.password.data == 'pw':
-            flask.flash('Zalogowano pomyślnie!', 'success')
-            return flask.redirect(flask.url_for('index'))
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            flask.flash('Zalogowano pomyślnie.', 'success')
+            next_page = flask.request.args.get('next')
+            return flask.redirect(next_page) if next_page else flask.redirect(flask.url_for('index'))
         else:
-            flask.flash('Logowanie się nie powiodło. Sprawdź nazwę i hasło użytkownika', 'danger')
+            flask.flash('Logowanie się nie powiodło. Sprawdź email i hasło.', 'danger')
     return flask.render_template('login.html', page_title='Zaloguj się', form=form)
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flask.flash('Wylogowano pomyślnie.', 'success')
+    return flask.redirect(flask.url_for('index'))
+
+@app.route("/account")
+@login_required
+def account():
+    return flask.render_template('account.html', page_title='Konto')
 
 @app.errorhandler(404)
 def page_not_found(e):

@@ -29,24 +29,35 @@
             <li class="nav-item">
                 <a class="nav-link" href="#">About</a>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
-                    aria-expanded="false">Tabele</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="/tab/zapasy">Zapasy</a>
-                    <a class="dropdown-item" href="/tab/zakupy">Zakupy</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/ustawienia">Ustawienia</a>
-                </div>
-            </li>
+            {% if current_user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+                        aria-expanded="false">Tabele</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/tab/zapasy">Zapasy</a>
+                        <a class="dropdown-item" href="/tab/zakupy">Zakupy</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/ustawienia">Ustawienia</a>
+                    </div>
+                </li>
+            {% endif %}
         </ul>
         <ul class="navbar-nav my-2 my-lg-0">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('login') }}">Zaloguj się</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('register') }}">Rejestracja</a>
-            </li>
+            {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('account') }}">Konto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Wyloguj</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">Zaloguj</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('register') }}">Zarejestruj</a>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </nav>
